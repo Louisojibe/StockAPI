@@ -2,7 +2,7 @@
 
 namespace TestWebApp.Models
 {
-    public class AppUser : IdentityUser
+    public class appUser : IdentityUser
     {
 
     }

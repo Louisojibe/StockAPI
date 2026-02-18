@@ -7,6 +7,7 @@ using TestWebApp.Data;
 using TestWebApp.Interfaces;
 using TestWebApp.Models;
 using TestWebApp.Repository;
+using TestWebApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +26,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
-builder.Services.AddIdentity<AppUser, IdentityRole>(options => {
+builder.Services.AddIdentity<appUser, IdentityRole>(options => {
     options.Password.RequiredLength = 12;
     options.Password.RequireDigit = true;
     options.Password.RequireLowercase = true;
@@ -56,6 +57,7 @@ builder.Services.AddAuthentication(options => {
 
 builder.Services.AddScoped<IStockRepository, StockRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 var app = builder.Build();
 

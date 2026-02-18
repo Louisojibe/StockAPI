@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TestWebApp.Dtos.Auth;
+using TestWebApp.Interfaces;
 using TestWebApp.Models;
 
 namespace TestWebApp.Controllers
@@ -10,10 +11,12 @@ namespace TestWebApp.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<AppUser> _userManager;
-        public AuthController(UserManager<AppUser> userManager)
+        private readonly UserManager<appUser> _userManager;
+        private readonly ITokenService _tokenService;
+        public AuthController(UserManager<appUser> userManager, ITokenService tokenService)
         {
             _userManager = userManager;
+            _tokenService = tokenService;
         }
 
         [HttpPost("register")]
@@ -24,7 +27,7 @@ namespace TestWebApp.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-                var user = new AppUser
+                var user = new appUser
                 {
                     UserName = register.Username,
                     Email = register.Email
@@ -39,10 +42,14 @@ namespace TestWebApp.Controllers
                     if (rolesResult.Succeeded)
                     {
                         return Ok(
-                            new {
-                            status = true,
-                            message = "User registered successfully"
-                        });
+                            new NewUserDto {
+
+                                Status = true,
+                                Message = "User registered successfully",
+                                Email = user.Email,
+                                Token = _tokenService.CreateToken(user)
+
+                            });
                     } else
                     {
                         return StatusCode(500, rolesResult.Errors);
